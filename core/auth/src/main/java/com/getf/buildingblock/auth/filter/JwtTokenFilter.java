@@ -13,7 +13,7 @@ import java.io.IOException;
 public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        int i=0;
+        int i = 0;
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }
