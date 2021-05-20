@@ -19,12 +19,12 @@ public class TokenRepositoryImpl implements TokenRepository {
     /**
      * 秘钥
      */
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret:1}")
     private String secret;
     /**
      * 过期时间(秒)
      */
-    @Value("${jwt.expire}")
+    @Value("${jwt.expire:10}")
     private long expire;
 
     /**
