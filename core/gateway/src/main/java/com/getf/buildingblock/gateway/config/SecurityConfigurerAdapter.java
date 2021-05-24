@@ -1,11 +1,9 @@
-package com.getf.buildingblock.auth.config;
+package com.getf.buildingblock.gateway.config;
 
-import com.getf.buildingblock.auth.filter.JwtTokenFilter;
-import com.getf.buildingblock.auth.service.UserDetailsServiceImpl;
+import com.getf.buildingblock.gateway.filter.JwtTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,16 +13,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    JwtTokenFilter jwtTokenFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().permitAll();
-        http.addFilterBefore(new JwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+        //http.authorizeRequests().antMatchers("/auth/**").permitAll();
+        http.authorizeRequests().anyRequest().permitAll().and().addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        //http.addFilterBefore(new JwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }
