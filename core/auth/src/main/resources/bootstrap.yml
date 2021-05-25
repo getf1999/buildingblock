@@ -1,6 +1,6 @@
 spring:
   application:
-    name: auth
+    name: oauth
   cloud:
     nacos:
       config:
