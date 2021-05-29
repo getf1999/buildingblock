@@ -18,8 +18,13 @@ security:
     client:
       access-token-uri: http://localhost:9997/oauth/token #令牌端点
       user-authorization-uri: http://localhost:9997/oauth/authorize #授权端点
-      client-id: web #OAuth2客户端ID
-      client-secret: secret #OAuth2客户端密钥
+      client-id: app #OAuth2客户端ID
+      client-secret: ssss #OAuth2客户端密钥
     resource:
       jwt:
         key-value: springcloud123 #使用对称加密方式，默认算法为HS256
+feign:
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true

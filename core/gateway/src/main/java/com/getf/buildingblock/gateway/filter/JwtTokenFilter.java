@@ -1,8 +1,10 @@
 package com.getf.buildingblock.gateway.filter;
 
 import com.alibaba.fastjson.JSONObject;
+import com.getf.buildingblock.gateway.model.CheckTokenResult;
 import com.getf.buildingblock.gateway.service.AuthService;
 import com.getf.buildingblock.infrastructure.PathUtil;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -15,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -31,7 +34,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-
         if(whiteListUrls!=null) {
             var whiteLists = whiteListUrls.split(",");
             for (var elem : whiteLists) {
@@ -58,9 +60,20 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             display401(httpServletResponse,"invalid_token","must be bearer token");
             return;
         }
-        var checkResult= authService.checkToken(authorizationSplitResult[1]);
-        if(!checkResult.isActive()){
-            display401(httpServletResponse,checkResult.getError(),checkResult.getErrorDescription());
+        CheckTokenResult checkTokenResult;
+        try{
+            checkTokenResult= authService.checkToken(authorizationSplitResult[1]);
+        }catch (FeignException e){
+            if(e.status()==400){
+                var body= new String( e.responseBody().get().array(), StandardCharsets.UTF_8);
+                checkTokenResult=JSONObject.parseObject(body,CheckTokenResult.class);
+            }else {
+                display500(httpServletResponse, "server error");
+                return;
+            }
+        }
+        if(!checkTokenResult.isActive()){
+            display401(httpServletResponse,checkTokenResult.getError(),checkTokenResult.getErrorDescription());
             return;
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
@@ -73,6 +86,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         httpServletResponse.setContentType("application/json;charset=UTF-8");
         Map<String,Object> rMap=new HashMap<>();
         rMap.put("message",errorDescription);
+        rMap.put("code",-1);
+        var jsonStr=JSONObject.toJSONString(rMap);
+        httpServletResponse.getWriter().write(jsonStr);
+    }
+
+
+    private void display500(HttpServletResponse httpServletResponse,String msg) throws IOException {
+        httpServletResponse.setStatus(500);
+        httpServletResponse.setContentType("application/json;charset=UTF-8");
+        Map<String,Object> rMap=new HashMap<>();
+        rMap.put("message",msg);
         rMap.put("code",-1);
         var jsonStr=JSONObject.toJSONString(rMap);
         httpServletResponse.getWriter().write(jsonStr);

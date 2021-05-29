@@ -1,16 +1,23 @@
 package com.getf.buildingblock.gateway.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class CheckTokenResult {
     private boolean active;
     private Long exp;
+    @JsonProperty("user_name")
     private String userName;
     private String jti;
+    @JsonProperty("client_id")
     private String clientId;
-    private String scope;
+    private List<String> scope;
     private String error;
+    @JsonProperty("error_description")
     private String errorDescription;
     /*
       "error": "invalid_token",
@@ -27,3 +34,5 @@ public class CheckTokenResult {
     ]
 }*/
 }
+
+/*{"active":true,"exp":1622279503,"user_name":"admin","jti":"7cc58c5b-168b-4868-8233-61e50524ce3f","client_id":"app","scope":["all"]}*/
