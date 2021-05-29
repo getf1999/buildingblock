@@ -27,6 +27,10 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.getf.buildingblock</groupId>
+            <artifactId>infrastructure</artifactId>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
 <!--            <artifactId>spring-boot-starter-web</artifactId>-->
@@ -52,21 +56,12 @@
             <artifactId>spring-security-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.getf.buildingblock</groupId>
-            <artifactId>infrastructure</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-oauth2</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.getf.buildingblock</groupId>
-            <artifactId>auth</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

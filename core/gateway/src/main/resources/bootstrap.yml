@@ -23,8 +23,3 @@ security:
     resource:
       jwt:
         key-value: springcloud123 #使用对称加密方式，默认算法为HS256
-feign:
-  httpclient:
-    enabled: false
-  okhttp:
-    enabled: true

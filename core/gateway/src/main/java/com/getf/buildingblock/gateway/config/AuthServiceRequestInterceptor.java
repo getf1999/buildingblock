@@ -29,22 +29,5 @@ public class AuthServiceRequestInterceptor implements RequestInterceptor {
         byte[] bytes= text.getBytes("UTF-8");
         var base64Str= Base64.getEncoder().encodeToString(bytes);
         requestTemplate.header("Authorization", "Basic "+base64Str);
-//        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-//        if (requestAttributes == null) {
-//            return;
-//        }
-//
-//        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-//        Enumeration<String> headerNames = request.getHeaderNames();
-//        if (headerNames != null) {
-//            while (headerNames.hasMoreElements()) {
-//                String name = headerNames.nextElement();
-//                Enumeration<String> values = request.getHeaders(name);
-//                while (values.hasMoreElements()) {
-//                    String value = values.nextElement();
-//                    requestTemplate.header("Authorization", value);
-//                }
-//            }
-//        }
     }
 }
