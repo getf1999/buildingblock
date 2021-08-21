@@ -3,11 +3,10 @@ package com.getf.buildingblock.gateway.filter;
 import com.alibaba.fastjson.JSONObject;
 import com.getf.buildingblock.gateway.model.CheckTokenResult;
 import com.getf.buildingblock.gateway.service.AuthService;
-import com.getf.buildingblock.infrastructure.PathUtil;
+import com.getf.buildingblock.infrastructure.util.PathUtil;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 @Configuration

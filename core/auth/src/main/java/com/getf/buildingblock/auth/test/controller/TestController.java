@@ -1,6 +1,6 @@
 package com.getf.buildingblock.auth.test.controller;
 
-import com.getf.buildingblock.infrastructure.IdUtil;
+import com.getf.buildingblock.infrastructure.util.IdUtil;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

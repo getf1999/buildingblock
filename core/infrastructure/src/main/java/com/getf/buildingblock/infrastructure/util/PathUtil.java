@@ -1,4 +1,4 @@
-package com.getf.buildingblock.infrastructure;
+package com.getf.buildingblock.infrastructure.util;
 
 import java.util.regex.Pattern;
 
