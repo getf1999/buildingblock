@@ -30,4 +30,19 @@ public class StringUtil {
         matcher.appendTail(sb);
         return sb.toString();
     }
+
+    /**
+     * 首字母转大写
+     * @param str
+     * @return
+     */
+    public static String firstCharToUp(String str){
+        char[] cs=str.toCharArray();
+        cs[0]-=32;
+        return String.valueOf(cs);
+    }
+
+    public static boolean isNullOrEmpty(String str){
+        return str==null||str.length()==0;
+    }
 }

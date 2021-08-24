@@ -1,5 +1,6 @@
 package com.getf.buildingblock.infrastucture.fastdev.config;
 
+import com.getf.buildingblock.infrastructure.util.StringUtil;
 import lombok.Data;
 
 import java.util.List;
@@ -20,8 +21,16 @@ public class FastDevTableConfig {
 
     @Data
     public static class TableConfig{
-        private String name;
-        private String primaryKey;
+        private String routeName;
+        public String getRouteName(){
+            if(StringUtil.isNullOrEmpty(routeName)){
+                return tableName;
+            }
+            return routeName;
+        }
+
+        private String tableName;
+        private String primaryKeyName;
 
         private CRUDConfig addConfig;
 

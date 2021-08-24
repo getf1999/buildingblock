@@ -2,16 +2,13 @@ package com.getf.buildingblock.infrastucture.fastdev.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.getf.buildingblock.infrastucture.fastdev.dao.DefaultDao;
+import com.getf.buildingblock.infrastructure.model.filter.data.FilterInfo;
 import com.getf.buildingblock.infrastucture.fastdev.service.DefaultService;
 import lombok.var;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @RestController
@@ -20,12 +17,22 @@ public class DefaultController {
     DefaultService service;
 
 
-    @RequestMapping("/{tableName}/list")
-    public Object query(@PathVariable("tableName") String tableName) throws SQLException {
-        var r=service.query(tableName,JSONArray.class);
+
+    @PostMapping("/{routeName}/list")
+    public Object query(@PathVariable("routeName") String routeName, @RequestBody FilterInfo filterInfo) throws SQLException {
+        var r=service.query(routeName,filterInfo,JSONArray.class);
         if(r.getCode()==-100){
             return ResponseEntity.notFound().build();
         }
-        return r.getData();
+        return r;
+    }
+
+    @PostMapping("/{routeName}")
+    public Object add(@PathVariable("routeName") String routeName, @RequestBody JSONObject jsonObject) throws SQLException {
+        var r=service.add(routeName,jsonObject);
+        if(r.getCode()==-100){
+            return ResponseEntity.notFound().build();
+        }
+        return r;
     }
 }

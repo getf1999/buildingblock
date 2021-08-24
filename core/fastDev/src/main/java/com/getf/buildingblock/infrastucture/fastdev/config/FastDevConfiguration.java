@@ -1,6 +1,8 @@
 package com.getf.buildingblock.infrastucture.fastdev.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.getf.buildingblock.infrastucture.fastdev.dao.sql.builder.ISqlBuilder;
+import com.getf.buildingblock.infrastucture.fastdev.dao.sql.builder.MysqlBuilder;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,10 +40,16 @@ public class FastDevConfiguration {
     @Bean
     public FastDevTableConfig getFastDevTableConfig(){
         var r=new FastDevTableConfig();
-        r.setUseBlackList(true);
-        r.setList(new ArrayList<>());
-        r.getList().add("sys_user");
+//        r.setUseBlackList(true);
+//        r.setList(new ArrayList<>());
+//        r.getList().add("sys_user");
         return r;
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public ISqlBuilder getSqlBuilder(){
+        return new MysqlBuilder();
     }
 }
 /*spring:
