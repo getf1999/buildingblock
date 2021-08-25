@@ -63,6 +63,10 @@ public class SqlInfoParamMap {
                 flagAt=true;
             }
         }
+        if(sb.length()>0){
+            names.add(sb.toString());
+            resultSql.append('?');
+        }
 
         SqlInfo r=new SqlInfo(resultSql.toString(),new ArrayList());
         for(var elem:names){

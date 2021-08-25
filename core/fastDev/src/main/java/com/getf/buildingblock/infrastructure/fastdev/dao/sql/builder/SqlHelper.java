@@ -1,4 +1,4 @@
-package com.getf.buildingblock.infrastucture.fastdev.dao.sql.builder;
+package com.getf.buildingblock.infrastructure.fastdev.dao.sql.builder;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-@Component
+
 public class SqlHelper {
     @Resource
     protected DruidDataSource druidDataSource;

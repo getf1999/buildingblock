@@ -1,21 +1,20 @@
-package com.getf.buildingblock.infrastucture.fastdev.dao;
+package com.getf.buildingblock.infrastructure.fastdev.dao;
 
-import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.getf.buildingblock.infrastructure.fastdev.config.FastDevTableConfig;
+import com.getf.buildingblock.infrastructure.fastdev.dao.sql.builder.ISqlBuilder;
+import com.getf.buildingblock.infrastructure.fastdev.dao.sql.builder.SqlHelper;
 import com.getf.buildingblock.infrastructure.model.filter.data.FilterInfo;
-import com.getf.buildingblock.infrastructure.util.StringUtil;
-import com.getf.buildingblock.infrastucture.fastdev.config.FastDevTableConfig;
-import com.getf.buildingblock.infrastucture.fastdev.dao.sql.builder.ISqlBuilder;
-import com.getf.buildingblock.infrastucture.fastdev.dao.sql.builder.SqlHelper;
 import lombok.var;
+import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class BaseDAO {
+
+public class DefaultDAO {
     @Resource
     protected ISqlBuilder sqlBuilder;
 
@@ -41,7 +40,7 @@ public class BaseDAO {
      * @param jsonObject
      * @throws SQLException
      */
-    public void insert(FastDevTableConfig.TableConfig tableConfig, FastDevTableConfig.TableConfig.CRUDConfig crudConfig,JSONObject jsonObject) throws SQLException {
+    public void insert(FastDevTableConfig.TableConfig tableConfig, FastDevTableConfig.TableConfig.CRUDConfig crudConfig, JSONObject jsonObject) throws SQLException {
         var sqlInfoParamMap= sqlBuilder.buildInsert(tableConfig.getTableName(),jsonObject,crudConfig.getIgnoreFields());
         sqlHelper.execNonQuery(sqlInfoParamMap);
     }
@@ -56,5 +55,10 @@ public class BaseDAO {
     public void update(FastDevTableConfig.TableConfig tableConfig, FastDevTableConfig.TableConfig.CRUDConfig crudConfig,JSONObject jsonObject) throws SQLException {
         var sqlInfoParamMap= sqlBuilder.buildUpdate(tableConfig.getTableName(),tableConfig.getPrimaryKeyName(),jsonObject,crudConfig.getIgnoreFields());
         sqlHelper.execNonQuery(sqlInfoParamMap);
+    }
+
+    public void delete(FastDevTableConfig.TableConfig tableConfig, FastDevTableConfig.TableConfig.CRUDConfig crudConfig,Long id) throws SQLException {
+        var buildResult=sqlBuilder.buildDelete(tableConfig.getTableName(),tableConfig.getPrimaryKeyName(),id);
+        sqlHelper.execNonQuery(buildResult);
     }
 }

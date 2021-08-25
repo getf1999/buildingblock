@@ -1,4 +1,4 @@
-package com.getf.buildingblock.infrastucture.fastdev.dao.sql.builder;
+package com.getf.buildingblock.infrastructure.fastdev.dao.sql.builder;
 
 import com.alibaba.fastjson.JSONObject;
 import com.getf.buildingblock.infrastructure.data.SqlInfoParamMap;
@@ -16,6 +16,8 @@ public interface ISqlBuilder {
     SqlInfoParamMap buildGetById(String tableName,String primaryKeyName,Long value);
 
     SqlInfoParamMap buildUpdate(String tableName,String primaryKeyName,JSONObject jsonObject, List<String> ignoreFields);
+
+    SqlInfoParamMap buildDelete(String tableName,String primaryKeyName,Long value);
 
     /**
      * 获取出去歧义的SQL 如 传入 demo sqlserver返回 [demo] mysql 返回 `demo`

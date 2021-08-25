@@ -1,11 +1,13 @@
-package com.getf.buildingblock.infrastucture.fastdev.config;
+package com.getf.buildingblock.infrastructure.fastdev.config;
 
 import com.getf.buildingblock.infrastructure.util.StringUtil;
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
 @Data
+@ConfigurationProperties("getf.buildingblock.infrastucture.fastdev")
 public class FastDevTableConfig {
     /**
      * 是否使用黑名单 默认true
@@ -18,6 +20,11 @@ public class FastDevTableConfig {
     private List<String> list;
 
     private List<TableConfig> tableConfigs;
+
+    /**
+     * 公共拦截器类名集合
+     */
+    private List<String> publicInterceptorClassNames;
 
     @Data
     public static class TableConfig{
@@ -42,12 +49,24 @@ public class FastDevTableConfig {
 
         private CRUDConfig queryConfig;
 
+        /**
+         * 忽略公共拦截器类名集合
+         */
+        private List<String> ignorePublicInterceptorClassNames;
+
+        /**
+         * 拦截器类名集合
+         */
+        private List<String> interceptorClassNames;
+
         @Data
         public static class CRUDConfig{
 
             private List<String> ignoreFields;
 
             private String sql;
+
+            private boolean disabled;
         }
     }
 }

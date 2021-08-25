@@ -1,23 +1,25 @@
-package com.getf.buildingblock.infrastucture.fastdev.dao.sql.builder;
+package com.getf.buildingblock.infrastructure.fastdev.dao.sql.builder;
 
 import com.alibaba.fastjson.JSONObject;
 import com.getf.buildingblock.infrastructure.data.SqlInfoParamMap;
 import com.getf.buildingblock.infrastructure.model.filter.data.FilterInfo;
 import com.getf.buildingblock.infrastructure.model.filter.data.SearchInfo;
-import com.getf.buildingblock.infrastructure.model.filter.data.SortInfo;
 import com.getf.buildingblock.infrastructure.util.StringUtil;
 import lombok.var;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class MysqlBuilder implements ISqlBuilder{
-    // region query
+
     @Override
     public SqlInfoParamMap buildQueryByFilterInfo(String srcSql, FilterInfo filterInfo) {
         StringBuilder sb=new StringBuilder();
-        sb.append("SELECT * FROM (").append(srcSql).append(") T");
+        if(srcSql.startsWith("`")){
+            sb.append("SELECT * FROM ").append(srcSql);
+        }else{
+            sb.append("SELECT * FROM (").append(srcSql).append(") T");
+        }
         srcSql= sb.toString();
         SqlInfoParamMap r= buildSearch(srcSql,filterInfo);
         var sql=buildOrderBy(r.getSql(),filterInfo);
@@ -25,6 +27,70 @@ public class MysqlBuilder implements ISqlBuilder{
         r.setSql(sql);
         return r;
     }
+
+    @Override
+    public SqlInfoParamMap buildInsert(String tableName, JSONObject jsonObject, List<String> ignoreFields) {
+        Map<String,Object> params=new HashMap<>();
+        List<String> insertFieldParts=new ArrayList<>();
+        List<String> insertValueParts=new ArrayList<>();
+        for(var elem:jsonObject.keySet()){
+            if(ignoreFields!=null&& ignoreFields.contains(elem)){
+               continue;
+            }
+            var randKey=getRandomID();
+            insertFieldParts.add("`"+StringUtil.humpToLine(elem)+"`");
+            insertValueParts.add("@"+randKey);
+            params.put(randKey,jsonObject.get(elem));
+        }
+        StringBuilder sb=new StringBuilder();
+        sb.append("INSERT INTO `").append(tableName).append("` (").append(String.join(",",insertFieldParts)).append(") VALUES (").append(String.join(",",insertValueParts)).append(")");
+        return new SqlInfoParamMap(sb.toString(),params);
+    }
+
+    @Override
+    public SqlInfoParamMap buildGetById(String tableName,String primaryKeyName,Long value) {
+        var sql="SELECT * FROM `"+tableName+"` WHERE `"+primaryKeyName+"`=@id";
+        Map<String,Object> params=new HashMap<>();
+        params.put(primaryKeyName,value);
+        return new SqlInfoParamMap(sql,params);
+    }
+
+    @Override
+    public SqlInfoParamMap buildUpdate(String tableName,String primaryKeyName, JSONObject jsonObject, List<String> ignoreFields) {
+        Map<String,Object> params=new HashMap<>();
+        StringBuilder sb=new StringBuilder();
+        sb.append("UPDATE `").append(tableName).append("` SET " );
+        for(var elem:jsonObject.keySet()){
+            if(ignoreFields!=null&& ignoreFields.contains(elem)||elem.equals(primaryKeyName)){
+                continue;
+            }
+            var value=jsonObject.get(elem);
+            if(value==null) continue;
+            sb.append("`").append(StringUtil.humpToLine(elem)).append("`=@");
+            var randKey=getRandomID();
+            sb.append(randKey).append(",");
+            params.put(randKey,jsonObject.get(elem));
+        }
+        sb.deleteCharAt(sb.length()-1);
+        var randKey=getRandomID();
+        sb.append(" WHERE `").append(primaryKeyName).append("`=@").append(randKey);
+        params.put(randKey,jsonObject.get(primaryKeyName));
+        return new SqlInfoParamMap(sb.toString(),params);
+    }
+
+    @Override
+    public SqlInfoParamMap buildDelete(String tableName, String primaryKeyName, Long value) {
+        var sql="DELETE FROM `"+tableName+"` WHERE `"+primaryKeyName+"`=@id";
+        Map<String,Object> params=new HashMap<>();
+        params.put(primaryKeyName,value);
+        return new SqlInfoParamMap(sql,params);
+    }
+
+    private String getRandomID(){
+        return "A"+UUID.randomUUID().toString().replaceAll("-", "");
+    }
+
+    // region query
 
     @Override
     public SqlInfoParamMap buildQuery(String tableName, FilterInfo filterInfo) {
@@ -108,58 +174,4 @@ public class MysqlBuilder implements ISqlBuilder{
     }
 
     // endregion query
-
-    @Override
-    public SqlInfoParamMap buildInsert(String tableName, JSONObject jsonObject, List<String> ignoreFields) {
-        Map<String,Object> params=new HashMap<>();
-        List<String> insertFieldParts=new ArrayList<>();
-        List<String> insertValueParts=new ArrayList<>();
-        for(var elem:jsonObject.keySet()){
-            if(ignoreFields!=null&& ignoreFields.contains(elem)){
-               continue;
-            }
-            var randKey=getRandomID();
-            insertFieldParts.add("`"+StringUtil.humpToLine(elem)+"`");
-            insertValueParts.add("@"+randKey);
-            params.put(randKey,jsonObject.get(elem));
-        }
-        StringBuilder sb=new StringBuilder();
-        sb.append("INSERT INTO `").append(tableName).append("` (").append(String.join(",",insertFieldParts)).append(") VALUES (").append(String.join(",",insertValueParts)).append(")");
-        return new SqlInfoParamMap(sb.toString(),params);
-    }
-
-    @Override
-    public SqlInfoParamMap buildGetById(String tableName,String primaryKeyName,Long value) {
-        var sql="SELECT * FROM `"+tableName+"` WHERE `"+primaryKeyName+"`=@id";
-        Map<String,Object> params=new HashMap<>();
-        params.put(primaryKeyName,value);
-        return new SqlInfoParamMap(sql,params);
-    }
-
-    @Override
-    public SqlInfoParamMap buildUpdate(String tableName,String primaryKeyName, JSONObject jsonObject, List<String> ignoreFields) {
-        Map<String,Object> params=new HashMap<>();
-        StringBuilder sb=new StringBuilder();
-        sb.append("UPDATE `").append(tableName).append("` SET " );
-        for(var elem:jsonObject.keySet()){
-            if(ignoreFields!=null&& ignoreFields.contains(elem)||elem.equals(primaryKeyName)){
-                continue;
-            }
-            var value=jsonObject.get(elem);
-            if(value==null) continue;
-            sb.append("`").append(StringUtil.humpToLine(elem)).append("`=@");
-            var randKey=getRandomID();
-            sb.append(randKey).append(",");
-            params.put(randKey,jsonObject.get(elem));
-        }
-        sb.deleteCharAt(sb.length()-1);
-        var randKey=getRandomID();
-        sb.append(" WHERE `").append(primaryKeyName).append("`=@").append(randKey);
-        params.put(randKey,jsonObject.get(primaryKeyName));
-        return new SqlInfoParamMap(sb.toString(),params);
-    }
-
-    private String getRandomID(){
-        return "A"+UUID.randomUUID().toString().replaceAll("-", "");
-    }
 }
