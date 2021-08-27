@@ -1,4 +1,4 @@
-package com.getf.buildingblock.infrastructure.model;
+package com.getf.buildingblock.infrastructure.model.result;
 
 import lombok.Data;
 

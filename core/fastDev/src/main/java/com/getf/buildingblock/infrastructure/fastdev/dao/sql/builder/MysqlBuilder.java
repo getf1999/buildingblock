@@ -5,6 +5,7 @@ import com.getf.buildingblock.infrastructure.data.SqlInfoParamMap;
 import com.getf.buildingblock.infrastructure.model.filter.data.FilterInfo;
 import com.getf.buildingblock.infrastructure.model.filter.data.SearchInfo;
 import com.getf.buildingblock.infrastructure.util.StringUtil;
+import com.sun.org.apache.bcel.internal.generic.RET;
 import lombok.var;
 
 import java.util.*;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 public class MysqlBuilder implements ISqlBuilder{
 
     @Override
-    public SqlInfoParamMap buildQueryByFilterInfo(String srcSql, FilterInfo filterInfo) {
+    public SqlInfoParamMap buildQuery(String srcSql, FilterInfo filterInfo) {
         StringBuilder sb=new StringBuilder();
         if(srcSql.startsWith("`")){
             sb.append("SELECT * FROM ").append(srcSql);
@@ -25,6 +26,19 @@ public class MysqlBuilder implements ISqlBuilder{
         var sql=buildOrderBy(r.getSql(),filterInfo);
         sql=buildPaging(sql,filterInfo);
         r.setSql(sql);
+        return r;
+    }
+
+    @Override
+    public SqlInfoParamMap buildCount(String srcSql, FilterInfo filterInfo) {
+        StringBuilder sb=new StringBuilder();
+        if(srcSql.startsWith("`")){
+            sb.append("SELECT COUNT(0) FROM ").append(srcSql);
+        }else{
+            sb.append("SELECT COUNT(0) FROM (").append(srcSql).append(") T");
+        }
+        srcSql= sb.toString();
+        SqlInfoParamMap r= buildSearch(srcSql,filterInfo);
         return r;
     }
 
@@ -91,12 +105,6 @@ public class MysqlBuilder implements ISqlBuilder{
     }
 
     // region query
-
-    @Override
-    public SqlInfoParamMap buildQuery(String tableName, FilterInfo filterInfo) {
-        var sql= "`"+ tableName+"`";
-        return buildQueryByFilterInfo(sql,filterInfo);
-    }
 
     @Override
     public String getDisambiguationSql(String str) {

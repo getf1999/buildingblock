@@ -2,7 +2,8 @@ package com.getf.buildingblock.infrastructure.fastdev.config.interceptor;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.getf.buildingblock.infrastructure.model.Result;
+import com.getf.buildingblock.infrastructure.model.result.ListPageResult;
+import com.getf.buildingblock.infrastructure.model.result.Result;
 import com.getf.buildingblock.infrastructure.model.filter.data.FilterInfo;
 import com.getf.buildingblock.infrastructure.fastdev.config.FastDevTableConfig;
 
@@ -17,7 +18,7 @@ public abstract class BaseInterceptor implements Interceptor{
     }
 
     @Override
-    public void afterQuery(JSONArray data, FastDevTableConfig.TableConfig tableConfig) {
+    public void afterQuery(JSONArray data, ListPageResult listPageResult, FastDevTableConfig.TableConfig tableConfig) {
 
     }
 

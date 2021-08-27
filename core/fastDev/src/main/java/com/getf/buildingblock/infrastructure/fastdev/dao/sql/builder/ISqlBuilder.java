@@ -7,9 +7,9 @@ import com.getf.buildingblock.infrastructure.model.filter.data.FilterInfo;
 import java.util.List;
 
 public interface ISqlBuilder {
-    SqlInfoParamMap buildQueryByFilterInfo(String sql, FilterInfo filterInfo);
+    SqlInfoParamMap buildQuery(String sql, FilterInfo filterInfo);
 
-    SqlInfoParamMap buildQuery(String tableName, FilterInfo filterInfo);
+    SqlInfoParamMap buildCount(String tableName, FilterInfo filterInfo);
 
     SqlInfoParamMap buildInsert(String tableName, JSONObject jsonObject, List<String> ignoreFields);
 

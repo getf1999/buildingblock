@@ -6,6 +6,7 @@ import com.getf.buildingblock.infrastructure.fastdev.config.FastDevTableConfig;
 import com.getf.buildingblock.infrastructure.fastdev.dao.sql.builder.ISqlBuilder;
 import com.getf.buildingblock.infrastructure.fastdev.dao.sql.builder.SqlHelper;
 import com.getf.buildingblock.infrastructure.model.filter.data.FilterInfo;
+import com.getf.buildingblock.infrastructure.util.StringUtil;
 import lombok.var;
 import org.springframework.stereotype.Repository;
 
@@ -22,16 +23,21 @@ public class DefaultDAO {
     protected SqlHelper sqlHelper;
 
 
-    public JSONArray queryBySrcSql(String sqlSrc, FilterInfo filterInfo, List<String> ignoreFields) throws SQLException {
-        var buildResult= sqlBuilder.buildQueryByFilterInfo(sqlSrc,filterInfo);
+    public JSONArray query(String sqlSrc, FilterInfo filterInfo, List<String> ignoreFields) throws SQLException {
+        var countBuildResult=sqlBuilder.buildCount(sqlSrc,filterInfo);
+        var buildResult= sqlBuilder.buildQuery(sqlSrc,filterInfo);
+        var count=sqlHelper.execScalar(countBuildResult,Long.class);
+        filterInfo.setTotal(count.intValue());
         var r= sqlHelper.execJSONArray(buildResult,ignoreFields);
         return r;
     }
 
     public JSONArray query(FastDevTableConfig.TableConfig tableConfig, FastDevTableConfig.TableConfig.CRUDConfig crudConfig, FilterInfo filterInfo) throws SQLException {
-        var buildResult= sqlBuilder.buildQuery(tableConfig.getTableName(),filterInfo);
-        var r= sqlHelper.execJSONArray(buildResult,crudConfig.getIgnoreFields());
-        return r;
+        var sql=crudConfig.getSql();
+        if(StringUtil.isNullOrEmpty(sql)){
+            sql=sqlBuilder.getDisambiguationSql(tableConfig.getTableName());
+        }
+        return query(sql,filterInfo,crudConfig.getIgnoreFields());
     }
 
     /**

@@ -3,7 +3,8 @@ package com.getf.buildingblock.infrastructure.fastdev.config.interceptor;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.getf.buildingblock.infrastructure.fastdev.config.FastDevTableConfig;
-import com.getf.buildingblock.infrastructure.model.Result;
+import com.getf.buildingblock.infrastructure.model.result.ListPageResult;
+import com.getf.buildingblock.infrastructure.model.result.Result;
 import com.getf.buildingblock.infrastructure.model.filter.data.FilterInfo;
 
 public interface Interceptor {
@@ -21,7 +22,7 @@ public interface Interceptor {
      * @param data
      * @param tableConfig
      */
-    void afterQuery(JSONArray data,FastDevTableConfig.TableConfig tableConfig);
+    void afterQuery(JSONArray data,ListPageResult listPageResult, FastDevTableConfig.TableConfig tableConfig);
 
     /**
      * 数据校验

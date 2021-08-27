@@ -1,22 +1,19 @@
 package com.getf.buildingblock.infrastructure.fastdev.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.getf.buildingblock.infrastructure.fastdev.config.FastDevTableConfig;
-import com.getf.buildingblock.infrastructure.fastdev.controller.DefaultController;
 import com.getf.buildingblock.infrastructure.fastdev.dao.DefaultDAO;
 import com.getf.buildingblock.infrastructure.fastdev.manager.InterceptorManager;
-import com.getf.buildingblock.infrastructure.model.Result;
+import com.getf.buildingblock.infrastructure.model.result.ListPageResult;
+import com.getf.buildingblock.infrastructure.model.result.Result;
 import com.getf.buildingblock.infrastructure.model.filter.data.FilterInfo;
 import com.getf.buildingblock.infrastructure.util.CollectionUtil;
 import com.getf.buildingblock.infrastructure.util.IdUtil;
 import com.getf.buildingblock.infrastructure.util.StringUtil;
 import lombok.var;
-import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.annotation.Resource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 
 public class DefaultService {
@@ -42,11 +39,15 @@ public class DefaultService {
             elem.beforeQuery(filterInfo,config);
         }
         var data=dao.query(config,config.getQueryConfig(),filterInfo);
+        var r=filterInfo.toListPageResult(data);
 
         for(var elem:interceptors){
-            elem.afterQuery(data,config);
+            elem.afterQuery(r.getData().getData(),r,config);
+            if(!r.getIsSuccess()){
+                return r;
+            }
         }
-        return new Result(data);
+        return r;
     }
 
     public Result<Long> add(String routeName, JSONObject jsonObject) throws SQLException {

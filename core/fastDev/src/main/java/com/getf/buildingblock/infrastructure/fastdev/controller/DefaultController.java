@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.annotation.Resource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 
 @RestController
@@ -66,11 +64,7 @@ public class DefaultController {
     }
 
 
-//    private void beanInited() throws NoSuchMethodException,  IllegalAccessException, InvocationTargetException {
-//        //注册Controller
-//        Method method=requestMappingHandlerMapping.getClass().getSuperclass().getSuperclass().
-//                getDeclaredMethod("detectHandlerMethods",Object.class);
-//        method.setAccessible(true);
-//        method.invoke(requestMappingHandlerMapping,this.getClass());
+//    private void beanInited() throws Exception {
+//        dynamicLoadUtils.registerController("DefaultController");
 //    }
 }

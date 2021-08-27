@@ -1,6 +1,7 @@
 package com.getf.buildingblock.infrastructure.model.filter.data;
 
 import com.alibaba.fastjson.JSONObject;
+import com.getf.buildingblock.infrastructure.model.result.ListPageResult;
 import lombok.Data;
 import lombok.var;
 
@@ -97,4 +98,15 @@ public class FilterInfo {
     }
 
     private JSONObject otherParams;
+
+    public <T> ListPageResult<T> toListPageResult(T data){
+        ListPageResult listPageResult=new ListPageResult();
+        var listPageData=new ListPageResult.ListPageData<T>();
+        listPageData.setPageIndex(pageIndex);
+        listPageData.setPageSize(pageSize);
+        listPageData.setTotal(total);
+        listPageData.setData(data);
+        listPageResult.setData(listPageData);
+        return listPageResult;
+    }
 }

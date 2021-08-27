@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.Function;
 
 
 public class SqlHelper {
@@ -39,6 +40,43 @@ public class SqlHelper {
             prepareStatement= getPreparedStatementParams(connection,sqlInfoParamMap);
             resultSet= prepareStatement.executeQuery();
             return ResultSetConverter.to(resultSet,ignoreFields);
+        }finally {
+            if(resultSet!=null){
+                try {
+                    resultSet.close();
+                }catch (SQLException e){
+
+                }
+            }
+            if(prepareStatement!=null){
+                try {
+                    prepareStatement.close();
+                }catch (SQLException e){
+
+                }
+            }
+            if(connection!=null){
+                try {
+                    connection.close();
+                }catch (SQLException e){
+
+                }
+            }
+        }
+    }
+
+    public <T> T execScalar(SqlInfoParamMap sqlInfoParamMap,Class<T> tClass) throws SQLException {
+        DruidPooledConnection connection=null;
+        PreparedStatement prepareStatement=null;
+        ResultSet resultSet=null;
+        try {
+            connection = druidDataSource.getConnection();
+            prepareStatement= getPreparedStatementParams(connection,sqlInfoParamMap);
+            resultSet=prepareStatement.executeQuery();
+            if(resultSet.next()){
+                return (T)resultSet.getObject(1);
+            }
+            return null;
         }finally {
             if(resultSet!=null){
                 try {
