@@ -32,7 +32,7 @@ public class DefaultDAO {
         return r;
     }
 
-    public JSONArray query(FastDevTableConfig.TableConfig tableConfig, FastDevTableConfig.TableConfig.CRUDConfig crudConfig, FilterInfo filterInfo) throws SQLException {
+    public JSONArray query(FastDevTableConfig.TableConfig tableConfig, FastDevTableConfig.TableConfig.QueryConfig crudConfig, FilterInfo filterInfo) throws SQLException {
         var sql=crudConfig.getSql();
         if(StringUtil.isNullOrEmpty(sql)){
             sql=sqlBuilder.getDisambiguationSql(tableConfig.getTableName());

@@ -37,8 +37,10 @@ public class InterceptorManager {
                     return elem.getIgnorePublicInterceptorClassNames().stream().filter(m1->!m.getClass().getName().equals(m1)).findAny().orElse(null)==null;
                 }).collect(Collectors.toList());
                 tmpInterceptors.addAll(tmpPublicInterceptors);
+            }else{
+                tmpInterceptors.addAll(publicInterceptors);
             }
-            tmpInterceptors.sort(Comparator.comparing(m->m.getOrder()));
+            tmpInterceptors.sort(Comparator.comparing(m->m.getOrder()==null?Integer.MAX_VALUE:m.getOrder()));
             interceptors.put(elem.getRouteName(),tmpInterceptors);
         }
     }

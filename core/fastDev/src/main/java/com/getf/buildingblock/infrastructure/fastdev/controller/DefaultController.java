@@ -63,6 +63,10 @@ public class DefaultController {
         return r;
     }
 
+//    @GetMapping("/{routeName}/tree")
+//    public Object getTree(@PathVariable("routeName") String routeName){
+//
+//    }
 
 //    private void beanInited() throws Exception {
 //        dynamicLoadUtils.registerController("DefaultController");

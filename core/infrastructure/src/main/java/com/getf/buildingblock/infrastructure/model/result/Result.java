@@ -5,15 +5,16 @@ import lombok.Data;
 @Data
 public class Result<T> {
     private int code;
-    private String message;
+    private String errorMessage;
     private T data;
 
     public Result(){
         this.code=0;
     }
 
-    public Result(String message){
+    public Result(String errorMessage){
         this.code=-1;
+        this.errorMessage=errorMessage;
     }
 
     public Result(T data){
@@ -21,21 +22,21 @@ public class Result<T> {
         this.data=data;
     }
 
-    public Result(boolean success,String message){
+    public Result(boolean success,String errorMessage){
         this.code=success?0:-1;
-        this.message=message;
+        this.errorMessage = errorMessage;
     }
 
-    public Result(int code,String message){
+    public Result(int code,String errorMessage){
         this.code=code;
-        this.message=message;
+        this.errorMessage = errorMessage;
     }
 
-    public boolean getIsSuccess(){
+    public boolean getSuccess(){
         return this.code==0;
     }
 
-    public void setIsSuccess(boolean value){
+    public void setSuccess(boolean value){
         if(value){
             this.code=0;
         }else{

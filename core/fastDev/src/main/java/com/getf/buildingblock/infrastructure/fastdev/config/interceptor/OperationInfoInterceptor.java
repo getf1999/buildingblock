@@ -38,4 +38,9 @@ public class OperationInfoInterceptor extends BaseInterceptor{
         jsonObject.put(editByNameFieldName, loginUserManager.getUser().getUserName());
         jsonObject.put(editTimeFieldName, new Date());
     }
+
+    @Override
+    public Integer getOrder() {
+        return 1000;
+    }
 }

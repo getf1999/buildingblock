@@ -6,7 +6,17 @@ spring:
     url: jdbc:mysql://192.168.137.200:3306/buildingblock_base?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: getf
     password: 111111
-
-
+getf:
+  buildingblock:
+    infrastucture:
+      fastdev:
+        public-interceptor-class-names: [com.getf.buildingblock.infrastructure.fastdev.config.interceptor.OperationInfoInterceptor]
+        table-configs:
+          - tableName: sys_user
+            interceptorClassNames: [com.getf.buildingblock.base.interceptor.UserInterceptor]
+            getConfig:
+              ignoreFields: [password]
+            queryConfig:
+              ignoreFields: [password]
 
 

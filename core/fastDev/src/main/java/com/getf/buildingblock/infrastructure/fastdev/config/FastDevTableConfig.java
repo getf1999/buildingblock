@@ -47,7 +47,7 @@ public class FastDevTableConfig {
 
         private CRUDConfig getConfig;
 
-        private CRUDConfig queryConfig;
+        private QueryConfig queryConfig;
 
         /**
          * 忽略公共拦截器类名集合
@@ -64,9 +64,17 @@ public class FastDevTableConfig {
 
             private List<String> ignoreFields;
 
-            private String sql;
-
             private boolean disabled;
+        }
+
+        @Data
+        public static class QueryConfig extends CRUDConfig{
+            private String sql;
+        }
+
+        @Data
+        public static class QueryTreeConfig extends QueryConfig{
+            private String parentNodeKey;
         }
     }
 }

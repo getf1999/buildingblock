@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.getf.buildingblock.infrastructure.fastdev.config.FastDevTableConfig;
 import com.getf.buildingblock.infrastructure.fastdev.dao.DefaultDAO;
 import com.getf.buildingblock.infrastructure.fastdev.manager.InterceptorManager;
-import com.getf.buildingblock.infrastructure.model.result.ListPageResult;
 import com.getf.buildingblock.infrastructure.model.result.Result;
 import com.getf.buildingblock.infrastructure.model.filter.data.FilterInfo;
 import com.getf.buildingblock.infrastructure.util.CollectionUtil;
@@ -43,12 +42,28 @@ public class DefaultService {
 
         for(var elem:interceptors){
             elem.afterQuery(r.getData().getData(),r,config);
-            if(!r.getIsSuccess()){
+            if(!r.getSuccess()){
                 return r;
             }
         }
         return r;
     }
+
+//    public Result getTree(String routeName, FilterInfo filterInfo) throws SQLException {
+//        var config=getTableConfig(routeName,5);
+//        if(isInBlackList(config.getTableName())){
+//            return new Result(-100,"is in black list");
+//        }
+//        if(config.getQueryConfig().isDisabled()){
+//            return new Result(-100,"operation disabled");
+//        }
+//        var interceptors=interceptorManager.getList(routeName);
+//        for(var elem:interceptors){
+//            elem.beforeQuery(filterInfo,config);
+//        }
+//        var data=dao.query(config,config.getQueryConfig(),filterInfo);
+//        var r=filterInfo.toListPageResult(data);
+//    }
 
     public Result<Long> add(String routeName, JSONObject jsonObject) throws SQLException {
         var config=getTableConfig(routeName,1);
@@ -62,7 +77,7 @@ public class DefaultService {
         var interceptors=interceptorManager.getList(routeName);
         for(var elem:interceptors){
             var reuslt= elem.validation(jsonObject,1,config);
-            if(!reuslt.getIsSuccess()) return reuslt;
+            if(!reuslt.getSuccess()) return reuslt;
         }
 
         var id=jsonObject.getLong(config.getPrimaryKeyName());
@@ -106,7 +121,7 @@ public class DefaultService {
         var interceptors=interceptorManager.getList(routeName);
         for(var elem:interceptors){
             var reuslt= elem.validation(jsonObject,2,config);
-            if(!reuslt.getIsSuccess()) return reuslt;
+            if(!reuslt.getSuccess()) return reuslt;
         }
 
         for(var elem:interceptors){
@@ -127,7 +142,7 @@ public class DefaultService {
         var interceptors=interceptorManager.getList(routeName);
         for(var elem:interceptors){
             Result result= elem.validationDelete(id,config);
-            if(!result.getIsSuccess()) return result;
+            if(!result.getSuccess()) return result;
         }
         dao.delete(config,config.getEditConfig(),id);
         return new Result();
@@ -136,14 +151,14 @@ public class DefaultService {
     /**
      * 获取配置
      * @param routeName
-     * @param type 1 add 2 edit 3 delete 4 get 5 query
+     * @param type 1 add 2 edit 3 delete 4 get 5 query 6 tree
      * @return
      */
     private FastDevTableConfig.TableConfig getTableConfig(String routeName,int type){
         FastDevTableConfig.TableConfig r=null;
 
         if(config.getTableConfigs()!=null){
-            r= CollectionUtil.firstOrDefault(config.getTableConfigs(),m->m.getRouteName().equals(routeName));
+            r= CollectionUtil.firstOrDefault(config.getTableConfigs(),m->routeName.equals(m.getRouteName()));
         }
         if(r==null){
             r=new FastDevTableConfig.TableConfig();
@@ -162,7 +177,7 @@ public class DefaultService {
             case 4:
                 r.setGetConfig(initCRUDConfig(r.getGetConfig()));
             case 5:
-                r.setQueryConfig(initCRUDConfig(r.getQueryConfig()));
+                r.setQueryConfig(r.getQueryConfig()==null?new FastDevTableConfig.TableConfig.QueryConfig():r.getQueryConfig());
         }
         return r;
     }
