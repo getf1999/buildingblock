@@ -63,10 +63,14 @@ public class DefaultController {
         return r;
     }
 
-//    @GetMapping("/{routeName}/tree")
-//    public Object getTree(@PathVariable("routeName") String routeName){
-//
-//    }
+    @GetMapping(value = {"/{routeName}/tree","/{routeName}/tree/{ignoreId}"})
+    public Object getTree(@PathVariable("routeName") String routeName,@PathVariable(value = "ignoreId",required = false) Long ignoreId) throws SQLException {
+        var r=service.getTree(routeName,ignoreId);
+        if(r.getCode()==-100){
+            return ResponseEntity.notFound().build();
+        }
+        return r;
+    }
 
 //    private void beanInited() throws Exception {
 //        dynamicLoadUtils.registerController("DefaultController");

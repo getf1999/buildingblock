@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class SearchInfo {
     public static final String EQ = "EQ";
+    public static final String NEQ = "NEQ";
     public static final String GT = "GT";
     public static final String GTE = "GTE";
     public static final String LT = "LT";

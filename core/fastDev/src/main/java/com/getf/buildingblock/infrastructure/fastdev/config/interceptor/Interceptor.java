@@ -14,15 +14,17 @@ public interface Interceptor {
      * 查询前处理
      * @param filterInfo
      * @param tableConfig
+     * @param type 0 普通list  1 tree
      */
-    void beforeQuery(FilterInfo filterInfo, FastDevTableConfig.TableConfig tableConfig);
+    void beforeQuery(FilterInfo filterInfo, FastDevTableConfig.TableConfig tableConfig,int type);
 
     /**
      * 查询后处理
      * @param data
      * @param tableConfig
+     * @param type 0 普通list  1 tree
      */
-    void afterQuery(JSONArray data,ListPageResult listPageResult, FastDevTableConfig.TableConfig tableConfig);
+    void afterQuery(JSONArray data,ListPageResult listPageResult, FastDevTableConfig.TableConfig tableConfig,int type);
 
     /**
      * 数据校验

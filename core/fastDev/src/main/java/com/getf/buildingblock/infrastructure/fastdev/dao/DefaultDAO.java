@@ -23,6 +23,20 @@ public class DefaultDAO {
     protected SqlHelper sqlHelper;
 
 
+    public JSONArray search(String sqlSrc, FilterInfo filterInfo, List<String> ignoreFields) throws SQLException {
+        var buildResult= sqlBuilder.buildSearch(sqlSrc,filterInfo);
+        var r= sqlHelper.execJSONArray(buildResult,ignoreFields);
+        return r;
+    }
+
+    public JSONArray search(FastDevTableConfig.TableConfig tableConfig, FastDevTableConfig.TableConfig.QueryConfig crudConfig, FilterInfo filterInfo) throws SQLException {
+        var sql=crudConfig.getSql();
+        if(StringUtil.isNullOrEmpty(sql)){
+            sql=sqlBuilder.getDisambiguationSql(tableConfig.getTableName());
+        }
+        return search(sql,filterInfo,crudConfig.getIgnoreFields());
+    }
+
     public JSONArray query(String sqlSrc, FilterInfo filterInfo, List<String> ignoreFields) throws SQLException {
         var countBuildResult=sqlBuilder.buildCount(sqlSrc,filterInfo);
         var buildResult= sqlBuilder.buildQuery(sqlSrc,filterInfo);

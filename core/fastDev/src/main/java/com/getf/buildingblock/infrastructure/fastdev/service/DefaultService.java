@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.getf.buildingblock.infrastructure.fastdev.config.FastDevTableConfig;
 import com.getf.buildingblock.infrastructure.fastdev.dao.DefaultDAO;
 import com.getf.buildingblock.infrastructure.fastdev.manager.InterceptorManager;
+import com.getf.buildingblock.infrastructure.model.filter.data.SearchInfo;
 import com.getf.buildingblock.infrastructure.model.result.Result;
 import com.getf.buildingblock.infrastructure.model.filter.data.FilterInfo;
 import com.getf.buildingblock.infrastructure.util.CollectionUtil;
@@ -14,6 +15,8 @@ import lombok.var;
 
 import javax.annotation.Resource;
 import java.sql.SQLException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class DefaultService {
     @Resource
@@ -35,35 +38,19 @@ public class DefaultService {
         }
         var interceptors=interceptorManager.getList(routeName);
         for(var elem:interceptors){
-            elem.beforeQuery(filterInfo,config);
+            elem.beforeQuery(filterInfo,config,0);
         }
         var data=dao.query(config,config.getQueryConfig(),filterInfo);
         var r=filterInfo.toListPageResult(data);
 
         for(var elem:interceptors){
-            elem.afterQuery(r.getData().getData(),r,config);
+            elem.afterQuery(data,r,config,0);
             if(!r.getSuccess()){
                 return r;
             }
         }
         return r;
     }
-
-//    public Result getTree(String routeName, FilterInfo filterInfo) throws SQLException {
-//        var config=getTableConfig(routeName,5);
-//        if(isInBlackList(config.getTableName())){
-//            return new Result(-100,"is in black list");
-//        }
-//        if(config.getQueryConfig().isDisabled()){
-//            return new Result(-100,"operation disabled");
-//        }
-//        var interceptors=interceptorManager.getList(routeName);
-//        for(var elem:interceptors){
-//            elem.beforeQuery(filterInfo,config);
-//        }
-//        var data=dao.query(config,config.getQueryConfig(),filterInfo);
-//        var r=filterInfo.toListPageResult(data);
-//    }
 
     public Result<Long> add(String routeName, JSONObject jsonObject) throws SQLException {
         var config=getTableConfig(routeName,1);
@@ -148,6 +135,56 @@ public class DefaultService {
         return new Result();
     }
 
+
+
+    public Result getTree(String routeName, Long ignoreId) throws SQLException {
+        var config=getTableConfig(routeName,5);
+        if(isInBlackList(config.getTableName())){
+            return new Result(-100,"is in black list");
+        }
+        var treeConfig=config.getQueryTreeConfig();
+        if(treeConfig.isDisabled()){
+            return new Result(-100,"operation disabled");
+        }
+        FilterInfo filterInfo;
+        if(ignoreId!=null){
+            filterInfo=FilterInfo.createFilterInfo(config.getPrimaryKeyName(),ignoreId.toString(), SearchInfo.NEQ);
+        }else{
+            filterInfo=new FilterInfo();
+        }
+        var interceptors=interceptorManager.getList(routeName);
+        for(var elem:interceptors){
+            elem.beforeQuery(filterInfo,config,1);
+        }
+        var data=dao.search(config,config.getQueryTreeConfig(),filterInfo);
+
+        var tree=toTree(
+            data,0L,
+            config.getPrimaryKeyName(),
+            treeConfig.getParentFieldName()==null?"parentId":treeConfig.getParentFieldName(),
+            treeConfig.getChildrenFieldName()==null?"children":treeConfig.getChildrenFieldName()
+        );
+
+        var r=new Result(tree);
+
+        for(var elem:interceptors){
+            elem.afterQuery(tree,null,config,0);
+            if(!r.getSuccess()){
+                return r;
+            }
+        }
+        return r;
+    }
+
+    private JSONArray toTree(JSONArray srcData, Long parentId,String primaryKeyFieldName,String parentFieldName,String childrenFieldName){
+        JSONArray r=new JSONArray();
+        var childrenNode=srcData.stream().map(m->(JSONObject)m).filter(m-> Objects.equals(m.getLong(parentFieldName),parentId)).collect(Collectors.toList());
+        for(var elem: childrenNode){
+            elem.put(childrenFieldName,toTree(srcData,elem.getLong(primaryKeyFieldName),primaryKeyFieldName,parentFieldName,childrenFieldName));
+            r.add(elem);
+        }
+        return r;
+    }
     /**
      * 获取配置
      * @param routeName
@@ -178,6 +215,8 @@ public class DefaultService {
                 r.setGetConfig(initCRUDConfig(r.getGetConfig()));
             case 5:
                 r.setQueryConfig(r.getQueryConfig()==null?new FastDevTableConfig.TableConfig.QueryConfig():r.getQueryConfig());
+            case 6:
+                r.setQueryTreeConfig(r.getQueryTreeConfig()==null?new FastDevTableConfig.TableConfig.QueryTreeConfig():r.getQueryTreeConfig());
         }
         return r;
     }

@@ -49,6 +49,8 @@ public class FastDevTableConfig {
 
         private QueryConfig queryConfig;
 
+        private QueryTreeConfig queryTreeConfig;
+
         /**
          * 忽略公共拦截器类名集合
          */
@@ -74,7 +76,8 @@ public class FastDevTableConfig {
 
         @Data
         public static class QueryTreeConfig extends QueryConfig{
-            private String parentNodeKey;
+            private String parentFieldName;
+            private String childrenFieldName;
         }
     }
 }

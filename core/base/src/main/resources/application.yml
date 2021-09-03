@@ -18,5 +18,7 @@ getf:
               ignoreFields: [password]
             queryConfig:
               ignoreFields: [password]
-
+          - tableName: sys_modular
+            queryConfig:
+              sql: SELECT c.*, p.name parent_name FROM sys_modular c LEFT JOIN sys_modular p ON c.parent_id=p.id
 

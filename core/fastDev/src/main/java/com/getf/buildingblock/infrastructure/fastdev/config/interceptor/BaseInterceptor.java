@@ -14,11 +14,11 @@ public abstract class BaseInterceptor implements Interceptor{
     }
 
     @Override
-    public void beforeQuery(FilterInfo filterInfo, FastDevTableConfig.TableConfig tableConfig) {
+    public void beforeQuery(FilterInfo filterInfo, FastDevTableConfig.TableConfig tableConfig,int type) {
     }
 
     @Override
-    public void afterQuery(JSONArray data, ListPageResult listPageResult, FastDevTableConfig.TableConfig tableConfig) {
+    public void afterQuery(JSONArray data, ListPageResult listPageResult, FastDevTableConfig.TableConfig tableConfig,int type) {
 
     }
 

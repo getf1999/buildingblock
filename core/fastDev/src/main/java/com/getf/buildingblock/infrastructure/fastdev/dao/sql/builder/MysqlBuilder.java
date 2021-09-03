@@ -22,7 +22,7 @@ public class MysqlBuilder implements ISqlBuilder{
             sb.append("SELECT * FROM (").append(srcSql).append(") T");
         }
         srcSql= sb.toString();
-        SqlInfoParamMap r= buildSearch(srcSql,filterInfo);
+        SqlInfoParamMap r= buildSearchBySrcSql(srcSql,filterInfo);
         var sql=buildOrderBy(r.getSql(),filterInfo);
         sql=buildPaging(sql,filterInfo);
         r.setSql(sql);
@@ -38,7 +38,7 @@ public class MysqlBuilder implements ISqlBuilder{
             sb.append("SELECT COUNT(0) FROM (").append(srcSql).append(") T");
         }
         srcSql= sb.toString();
-        SqlInfoParamMap r= buildSearch(srcSql,filterInfo);
+        SqlInfoParamMap r= buildSearchBySrcSql(srcSql,filterInfo);
         return r;
     }
 
@@ -111,7 +111,18 @@ public class MysqlBuilder implements ISqlBuilder{
         return "`"+str+"`";
     }
 
-    private SqlInfoParamMap buildSearch(String srcSql,FilterInfo filterInfo){
+    public SqlInfoParamMap buildSearch(String srcSql,FilterInfo filterInfo){
+        StringBuilder sb=new StringBuilder();
+        if(srcSql.startsWith("`")){
+            sb.append("SELECT * FROM ").append(srcSql);
+        }else{
+            sb.append("SELECT * FROM (").append(srcSql).append(") T");
+        }
+        srcSql= sb.toString();
+        return buildSearchBySrcSql(srcSql,filterInfo);
+    }
+
+    private SqlInfoParamMap buildSearchBySrcSql(String srcSql,FilterInfo filterInfo){
         var searchInfos=filterInfo.getSearchInfos();
         if(searchInfos==null||searchInfos.size()==0) return new SqlInfoParamMap(srcSql);
         StringBuilder sb=new StringBuilder();
@@ -137,7 +148,7 @@ public class MysqlBuilder implements ISqlBuilder{
                 for(var value:searchInfo.getValues()){
                     StringBuilder partOrSb=new StringBuilder();
                     partOrSb.append("`").append(StringUtil.humpToLine(searchInfo.getFieldName())).append("` ");
-                    partOrSb.append(searchType);
+                    partOrSb.append(getSearchSymbolBySearchType(searchType));
                     var randomID=getRandomID();
                     if(SearchInfo.LIKE.equals(searchType)){
                         partOrSb.append(" CONCAT('%',@").append(randomID).append(",'%')");
@@ -153,6 +164,25 @@ public class MysqlBuilder implements ISqlBuilder{
         }
         sb.append(String.join(" AND ",searchAndParts));
         return new SqlInfoParamMap(sb.toString(),params);
+    }
+
+    private String getSearchSymbolBySearchType(String searchType){
+        switch (searchType){
+            case SearchInfo.EQ:
+                return "=";
+            case SearchInfo.GT:
+                return ">";
+            case SearchInfo.GTE:
+                return ">=";
+            case SearchInfo.LT:
+                return "<";
+            case SearchInfo.LTE:
+                return "<=";
+            case SearchInfo.NEQ:
+                return "!=";
+            default:
+                return "LIKE";
+        }
     }
 
     private String buildOrderBy(String srcSql,FilterInfo filterInfo){
